@@ -53,8 +53,8 @@ class PageController extends AbstractController
         }
 
         $form = $this->createFormBuilder($page)
-          ->add('title', TextType::class)
-          ->add('content', TextareaType::class)
+          ->add('title', TextType::class, ['required' => true])
+          ->add('content', TextareaType::class, ['required' => true])
           ->add('save', SubmitType::class, [
             'label' => 'Save',
             'attr' => ['class' => 'buttonLogin']

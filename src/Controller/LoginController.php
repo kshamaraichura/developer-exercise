@@ -38,8 +38,8 @@ class LoginController extends AbstractController
         $user = new User();
 
         $form = $this->createFormBuilder($user)
-          ->add('userName', TextType::class)
-          ->add('password', PasswordType::class)
+          ->add('userName', TextType::class, ['required' => true])
+          ->add('password', PasswordType::class, ['required' => true])
           ->add('save', SubmitType::class,[
             'label' => 'Login',
               'attr' => ['class' => 'buttonLogin']
