@@ -54,7 +54,7 @@ class LoginController extends AbstractController
             if($user->getUserName() === $user->getPassword()) {
                 $this->newLogin();
                 return $this->redirectToRoute('app_page_getpages', [
-                  'id' => 0
+                  'id' => 1
                 ]);
             } else {
                 return $this->render('login.html.twig', [
