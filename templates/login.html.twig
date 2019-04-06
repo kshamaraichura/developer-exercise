@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+        <section id="content">
+
+            <h1>Symbiote</h1><br/>
+            <h2>Login to your content management</h2><br/>
+            {{ form(form) }}
+            {% if error is defined %}
+                <p>Please enter same username and password!</p>
+            {% endif %}
+
+        </section><!-- content -->
+    </div><!-- container -->
+{% endblock %}

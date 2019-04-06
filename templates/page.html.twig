@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    Welcome to page creation
+    {% for page in pages %}
+        <table>
+            <tr><td class="bold">Id: </td><td>{{ page.id }}</td></tr>
+            <tr><td class="bold">Title: </td><td>{{ page.title }}</td></tr>
+            <tr><td class="bold">Content: </td><td>{{ page.content }}</td></tr>
+        </table>
+        {%  endfor %}
+{% endblock %}
