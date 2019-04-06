@@ -1,12 +1,63 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    Welcome to page creation
-    {% for page in pages %}
-        <table>
-            <tr><td class="bold">Id: </td><td>{{ page.id }}</td></tr>
-            <tr><td class="bold">Title: </td><td>{{ page.title }}</td></tr>
-            <tr><td class="bold">Content: </td><td>{{ page.content }}</td></tr>
-        </table>
-        {%  endfor %}
+    <div class="grid-container">
+        <div class="item1"><h1>Symbiote<br/>Welcome to content management</h1></div>
+        <div class="item2">
+            {% for page in pages %}
+                <a class="font15" href="/pages/{{ page.id }}">
+                    Page:
+                    {% if page.id == 0 %}'New'{% else %}{{ page.id }}{% endif %}
+                </a>
+                <hr/>
+            {% endfor %}
+        </div>
+
+        <div class="item3">
+            {% if page %}
+                <div class="container"><section id="content">
+                        {% if form is defined %}
+                            <table>
+                                {{ form_start(form) }}
+                                {{ form_errors(form) }}
+
+                                <tr>
+                                    <td>{{ form_label(form.title) }}</td>
+                                    {{ form_errors(form.title) }}
+                                    <td>{{ form_widget(form.title) }}</td>
+                                    {{ form_help(form.title) }}
+                                </tr>
+
+                                <tr>
+                                    <td>{{ form_label(form.content) }}</td>
+                                    {{ form_errors(form.content) }}
+                                    <td>{{ form_widget(form.content) }}</td>
+                                    {{ form_help(form.content) }}
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2">{{ form_widget(form.save) }}</td>
+                                </tr>
+
+                                {{ form_end(form) }}
+                            </table>
+                        {% else %}
+                            <table>
+                                <tr><td class="bold">Id: </td><td>{{ page.id }}</td></tr>
+                                <tr><td class="bold">Title: </td><td>{{ page.title }}</td></tr>
+                                <tr><td class="bold">Content: </td><td>{{ page.content }}</td></tr>
+                            </table>
+                            <div>
+                                <a class="font15" href="/create/{{ page.id }}"><button class="buttonLogin">Edit</button></a>
+                                <a class="font15" href="/delete/{{ page.id }}"><button class="buttonLogin">Delete</button></a>
+                            </div>
+                        {% endif %}
+                    </section></div>
+            {% else %}
+                <h3>No Page found!</h3>
+            {% endif %}
+        </div>
+        <a href="{{ path('app_page_setpages') }}"><button class="buttonLogin">Add Page</button></a>
+        <div class="item5"><h5>@Copyright: Symbiote Pty Ltd.</h5></div>
+    </div>
 {% endblock %}

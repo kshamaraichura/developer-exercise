@@ -10,11 +10,21 @@ namespace App\Controller;
 
 use App\Entity\Page;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PageController extends AbstractController
 {
+    protected $session;
+
+    public function __construct()
+    {
+        $this->session = new Session();
+    }
 
     /**
      * @Route("/pages/{id}")
@@ -22,19 +32,11 @@ class PageController extends AbstractController
      */
     public function getPages(Request $request, $id)
     {
-
-        $page = new Page();
-        $page->setId($id);
-        $page->setTitle('First');
-        $page->setContent('Sample content');
-
-
-        $pages = [];
-        array_push($pages, $page);
+        $pages = $this->session->get('pages', []);
 
         return $this->render('page.html.twig',[
           'pages' => $pages,
-          'page' => self::getPageById($id)
+          'page' => $this->getPageById($id)
         ]);
     }
 
@@ -42,9 +44,39 @@ class PageController extends AbstractController
      * @Route("/create/{id}")
      * @param \Symfony\Component\HttpFoundation\Request $request
      */
-    public function setPages(Request $request, $id)
+    public function setPages(Request $request, $id = 0)
     {
-        return $this->render('base.html.twig');
+        $pages = $this->session->get('pages', []);
+        $page = new Page($id, 'Enter title', 'Enter Content');
+        if ($id > 0) {
+            $page = $this->getPageById($id);
+        }
+
+        $form = $this->createFormBuilder($page)
+          ->add('title', TextType::class)
+          ->add('content', TextareaType::class)
+          ->add('save', SubmitType::class, [
+            'label' => 'Save',
+            'attr' => ['class' => 'buttonLogin']
+          ])
+          ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $pageData = $form->getData();
+            $newId = ($id == 0) ? $this->getNextId() : $id;
+            $page = new Page($newId, $pageData->getTitle(), $pageData->getContent());
+            $pages[$newId] = $page;
+            $this->session->set('pages', $pages);
+            return $this->getPages($request, $newId);
+        }
+
+        return $this->render('page.html.twig', [
+            'pages' => $pages,
+            'page' => $page,
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -53,11 +85,23 @@ class PageController extends AbstractController
      */
     public function deletePage(Request $request, $id)
     {
-        return $this->render('base.html.twig');
+        $pages = $this->session->get('pages', []);
+        if (isset($pages[$id])) {
+            unset($pages[$id]);
+        }
+        $this->session->set('pages', $pages);
+        return $this->getPages($request, $id);
     }
 
     private function getPageById($id)
     {
-        return null;
+        $pages = $this->session->get('pages', []);
+        return isset($pages[$id]) ? $pages[$id] : null;
+    }
+
+    private function getNextId() {
+        $lastId = $this->session->get('lastId', 0) + 1;
+        $this->session->set('lastId', $lastId);
+        return $lastId;
     }
 }

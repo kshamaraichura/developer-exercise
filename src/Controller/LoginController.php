@@ -8,17 +8,26 @@
 
 namespace App\Controller;
 
+use App\Entity\Page;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 
 class LoginController extends AbstractController
 {
+
+    protected $session;
+
+    public function __construct()
+    {
+        $this->session = new Session();
+    }
 
     /**
      * @Route("/")
@@ -32,7 +41,8 @@ class LoginController extends AbstractController
           ->add('userName', TextType::class)
           ->add('password', PasswordType::class)
           ->add('save', SubmitType::class,[
-            'label' => 'Login'
+            'label' => 'Login',
+              'attr' => ['class' => 'buttonLogin']
           ])
           ->getForm();
 
@@ -42,6 +52,7 @@ class LoginController extends AbstractController
             $user = $form->getData();
 
             if($user->getUserName() === $user->getPassword()) {
+                $this->newLogin();
                 return $this->redirectToRoute('app_page_getpages', [
                   'id' => 0
                 ]);
@@ -57,6 +68,17 @@ class LoginController extends AbstractController
         return $this->render('login.html.twig', [
           "form" => $form->createView()
         ]);
+    }
+
+    private function newLogin() {
+        $pages = [];
+        $n = 3;
+        for ($i = 1; $i <= $n; $i++) {
+            $page = new Page($i, 'Title '.$i, 'Content '.$i);
+            $pages[$i] = $page;
+        }
+        $this->session->set('pages', $pages);
+        $this->session->set('lastId', $n);
     }
 
 }

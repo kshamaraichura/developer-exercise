@@ -16,6 +16,13 @@ class Page
     protected $title;
     protected $content;
 
+    public function __construct($i, $t, $c)
+    {
+        $this->setId($i);
+        $this->setTitle($t);
+        $this->setContent($c);
+    }
+
     /**
      * @return mixed
      */
